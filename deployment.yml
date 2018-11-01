@@ -1,0 +1,40 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: metrics-example
+  labels:
+    app: metrics
+    release: metrics-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metrics
+      release: metrics-example
+  template:
+    metadata:
+      labels:
+        app: metrics
+        release: metrics-example
+    spec:
+      containers:
+      - name: metrics
+        image: eirini/metrics-example
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: certs
+          mountPath: "/etc/certs"
+          readOnly: true
+        env:
+        - name: CERT_PATH
+          value: "/etc/certs/doppler-cert"
+        - name: KEY_PATH
+          value: "/etc/certs/doppler-cert-key"
+        - name: CA_CERT_PATH
+          value: "/etc/certs/internal-ca-cert"
+        - name: DOPPLER_ADDR
+          value: "172.30.88.181:8082"
+      volumes:
+       - name: certs
+         secret:
+           secretName: secrets-2.14.0-1
